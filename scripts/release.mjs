@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -15,18 +15,13 @@ if (!token) console.warn("Kein VFSM_MAIL_TOKEN: Passwort-Reset per E-Mail ist in
 const overlay = join(tmpdir(), "vf-sitemanager.local.conf.json");
 writeFileSync(overlay, JSON.stringify({ build: { frontendDist: webOut } }));
 
-execSync(`npx tauri build --config "${overlay}"`, {
+execSync(`npx tauri build --no-bundle --config "${overlay}"`, {
   stdio: "inherit",
   env: { ...process.env, VFSM_WEB_OUT: webOut, VFSM_MAIL_TOKEN: token, CARGO_TARGET_DIR: "C:/Dev/vf-sitemanager-target" },
 });
 
 mkdirSync(out, { recursive: true });
-const files = [
-  [join(target, "vf-sitemanager.exe"), "VF SiteManager.exe"],
-  ...["nsis", "msi"].flatMap((dir) =>
-    readdirSync(join(target, "bundle", dir)).map((f) => [join(target, "bundle", dir, f), f]),
-  ),
-];
+const files = [[join(target, "vf-sitemanager.exe"), "Dynooh SiteManager.exe"]];
 let failed = false;
 for (const [from, name] of files) {
   try {

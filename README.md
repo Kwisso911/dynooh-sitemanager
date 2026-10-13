@@ -41,12 +41,12 @@ Release binaries are built by GitHub Actions from this repository ([`.github/wor
 
 ## Privacy
 
-This program does not collect or transmit personal data, with two exceptions that are triggered by the user:
+This program does not collect or transmit personal data. It only contacts apps.dynooh.com in two cases:
 
-- **Update check:** on start the app downloads `https://apps.dynooh.com/downloads/sitemanager.json` to compare version numbers. No data is sent besides the usual HTTP request.
-- **Forgot master password:** the recovery e-mail address and a one-time code are sent to `https://apps.dynooh.com/api/reset-mail.php`, which e-mails the code. Nothing is stored apart from short-lived rate-limit counters.
+- **Update check:** on start the app downloads `https://apps.dynooh.com/downloads/sitemanager.json` to compare version numbers. No data is sent besides the usual HTTP request. It can be switched off under Settings → Updates.
+- **Forgot master password:** only when the user requests it, the recovery e-mail address and a one-time code are sent to `https://apps.dynooh.com/api/reset-mail.php`, which e-mails the code. Nothing is stored apart from short-lived rate-limit counters.
 
-FTP credentials and passwords never leave your computer except for connecting to your own servers.
+FTP credentials and passwords never leave your computer except for connecting to your own servers. Full privacy policy: [apps.dynooh.com/privacy.html](https://apps.dynooh.com/privacy.html)
 
 ## License
 

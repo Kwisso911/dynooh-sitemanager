@@ -43,6 +43,7 @@ export interface Prefs {
   custom: Palette;
   sidebar: Position;
   serverSide: Position;
+  updateCheck: boolean;
 }
 
 const defaultLang = "en";
@@ -53,6 +54,7 @@ export const prefs = $state<Prefs>({
   theme: "dark",
   sidebar: "right",
   serverSide: "left",
+  updateCheck: true,
   ...stored,
   lang: stored.langChosen && stored.lang ? stored.lang : defaultLang,
   custom: { ...THEMES.dark, ...(stored.custom ?? {}) },

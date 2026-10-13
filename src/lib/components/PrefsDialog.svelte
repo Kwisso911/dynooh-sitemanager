@@ -170,5 +170,11 @@
         </label>
       </div>
     </fieldset>
+
+    <fieldset>
+      <legend>{t("Updates")}</legend>
+      <label class="check"><input type="checkbox" bind:checked={prefs.updateCheck} /> {t("Beim Start nach neuer Version suchen")}</label>
+      <p class="muted">{t("Lädt dazu nur die Versionsnummer von apps.dynooh.com, es werden keine Daten gesendet.")}</p>
+    </fieldset>
   </div>
 </div>

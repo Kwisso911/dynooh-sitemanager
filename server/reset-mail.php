@@ -1,6 +1,6 @@
 <?php
 /**
- * VF SiteManager – sends the one-time code for resetting the master password.
+ * Dynooh SiteManager – sends the one-time code for resetting the master password.
  * Upload to https://apps.dynooh.com/api/reset-mail.php (URL is compiled into the app).
  *
  * Delivery order: direct to the recipient's MX, then optional SMTP login (mail.json outside the web root),
@@ -214,12 +214,12 @@ if (!allow('ip:' . ($_SERVER['REMOTE_ADDR'] ?? ''), LIMIT_PER_IP) || !allow('mai
 }
 
 if ($lang === 'de') {
-    $subject = 'VF SiteManager: Code zum Zurücksetzen des Master-Passworts';
-    $text = "Dein Code zum Zurücksetzen des Master-Passworts im VF SiteManager:\n\n    $code\n\n"
+    $subject = 'Dynooh SiteManager: Code zum Zurücksetzen des Master-Passworts';
+    $text = "Dein Code zum Zurücksetzen des Master-Passworts im Dynooh SiteManager:\n\n    $code\n\n"
         . "Der Code ist 30 Minuten gültig. Falls du das nicht angefordert hast, kannst du diese E-Mail ignorieren.\n";
 } else {
-    $subject = 'VF SiteManager: code to reset your master password';
-    $text = "Your code to reset the master password in VF SiteManager:\n\n    $code\n\n"
+    $subject = 'Dynooh SiteManager: code to reset your master password';
+    $text = "Your code to reset the master password in Dynooh SiteManager:\n\n    $code\n\n"
         . "The code is valid for 30 minutes. If you did not request this, you can ignore this e-mail.\n";
 }
 

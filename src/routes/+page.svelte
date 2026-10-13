@@ -88,7 +88,7 @@
     applyTheme();
     loadLangPacks();
     getVersion().then((v) => (version = v));
-    checkUpdate();
+    if (prefs.updateCheck) checkUpdate();
     refreshMaster();
     const masterTimer = setInterval(refreshMaster, 30_000);
     const loaded = api.sitesList();
@@ -440,7 +440,7 @@
 
   <aside class="sidebar" style="width: {sidebarWidth}px">
     <div class="brand">
-      <span>VF SiteManager</span>
+      <span>Dynooh SiteManager</span>
       {#if version}<span class="app-version" title={t("Version {version}", { version })}>v{version}</span>{/if}
       <div class="spacer"></div>
       <button class="icon-btn" title={t("Neue Site anlegen")} onclick={newSite}><Icon name="sitePlus" /></button>
