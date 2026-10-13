@@ -1,6 +1,6 @@
 [package]
 name = "vf-sitemanager"
-version = "0.1.0"
+version = "0.1.1"
 description = "VF SiteManager – Site-, FTP- und Repo-Verwaltung"
 authors = ["Visual Fantastix"]
 license = "MIT"

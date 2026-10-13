@@ -44,7 +44,7 @@ Release binaries are built by GitHub Actions from this repository ([`.github/wor
 This program does not collect or transmit personal data, with two exceptions that are triggered by the user:
 
 - **Update check:** on start the app downloads `https://apps.dynooh.com/downloads/sitemanager.json` to compare version numbers. No data is sent besides the usual HTTP request.
-- **Forgot master password:** the recovery e-mail address and a one-time code are sent to `https://v-f.ch/software/sitemanager/reset-mail.php`, which e-mails the code. Nothing is stored apart from short-lived rate-limit counters.
+- **Forgot master password:** the recovery e-mail address and a one-time code are sent to `https://apps.dynooh.com/api/reset-mail.php`, which e-mails the code. Nothing is stored apart from short-lived rate-limit counters.
 
 FTP credentials and passwords never leave your computer except for connecting to your own servers.
 

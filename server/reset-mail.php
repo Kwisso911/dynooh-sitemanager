@@ -1,20 +1,21 @@
 <?php
 /**
  * VF SiteManager – sends the one-time code for resetting the master password.
- * Upload to https://v-f.ch/software/sitemanager/reset-mail.php (URL is compiled into the app).
+ * Upload to https://apps.dynooh.com/api/reset-mail.php (URL is compiled into the app).
  *
  * Delivery order: direct to the recipient's MX, then optional SMTP login (mail.json outside the web root),
- * then PHP mail(). The SPF record of v-f.ch must allow this server's IP.
+ * then PHP mail(). The SPF record of dynooh.com must allow this server's IP.
  */
 
 /** reset-mail.config.php (not in the repository): <?php return ['token' => '…']; */
 define('TOKEN', (string)((require __DIR__ . '/reset-mail.config.php')['token'] ?? ''));
-const FROM_ADDR = 'noreply@v-f.ch';
-const FROM_NAME = 'VF SiteManager';
-const HELO = 'v-f.ch';
+const FROM_ADDR = 'noreply@dynooh.com';
+const FROM_NAME = 'Dynooh SiteManager';
+const HELO = 'dynooh.com';
 const LIMIT_PER_EMAIL = 3;   // per hour
 const LIMIT_PER_IP = 10;     // per hour
 
+ini_set('display_errors', '0');
 header('Content-Type: application/json; charset=utf-8');
 
 function reply(int $status, array $body): void
@@ -43,7 +44,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL) || preg_match('/[\r\n<>]/', $emai
 /** Counts requests per key within the last hour; returns false once the limit is reached. */
 function allow(string $key, int $limit): bool
 {
-    $file = sys_get_temp_dir() . '/vfsm-' . hash('sha256', $key);
+    $file = sys_get_temp_dir() . '/dynooh-sm-' . hash('sha256', $key);
     $now = time();
     $hits = array_filter(
         array_map('intval', @file($file, FILE_IGNORE_NEW_LINES) ?: []),
@@ -57,18 +58,15 @@ function allow(string $key, int $limit): bool
     return true;
 }
 
-/** Optional SMTP login: {"host":"…","port":587,"user":"…","pass":"…"} stored outside httpdocs. */
+/** Optional SMTP login: {"host":"…","port":587,"user":"…","pass":"…"} in the vhost's private folder. */
 function mail_config(): ?array
 {
-    foreach ([dirname(__DIR__, 3) . '/private/vfsm-mail.json', __DIR__ . '/../../../private/vfsm-mail.json'] as $path) {
-        if (is_readable($path)) {
-            $data = json_decode((string)file_get_contents($path), true);
-            if (is_array($data) && !empty($data['host']) && !empty($data['user']) && !empty($data['pass'])) {
-                return $data;
-            }
-        }
+    $path = dirname(__DIR__, 2) . '/private/vfsm-mail.json';
+    if (!is_readable($path)) {
+        return null;
     }
-    return null;
+    $data = json_decode((string)file_get_contents($path), true);
+    return is_array($data) && !empty($data['host']) && !empty($data['user']) && !empty($data['pass']) ? $data : null;
 }
 
 function smtp_read($fp): string

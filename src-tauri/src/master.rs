@@ -14,7 +14,7 @@ const KEY: &str = "__master__";
 const UNLOCK_FOR: Duration = Duration::from_secs(10 * 60);
 const RESET_VALID_SECS: i64 = 30 * 60;
 const RESET_MAX_TRIES: u8 = 5;
-const MAIL_ENDPOINT: &str = "https://v-f.ch/software/sitemanager/reset-mail.php";
+const MAIL_ENDPOINT: &str = "https://apps.dynooh.com/api/reset-mail.php";
 /// Shared secret of the mail endpoint, injected at build time; builds without it cannot send reset codes.
 const MAIL_TOKEN: Option<&str> = option_env!("VFSM_MAIL_TOKEN");
 pub const LOCKED: &str = "Master-Passwort erforderlich";
