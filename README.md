@@ -32,12 +32,12 @@ The PHP endpoint that sends the reset code lives in [`server/`](server/).
 
 ## Code signing policy
 
-Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+Code signing certificate: [Certum Open Source Code Signing](https://www.certum.eu/) (Asseco Data Systems), issued to Christian Tanner. The certificate is currently being issued; until then releases are unsigned.
 
 - Committers and reviewers: Christian Tanner ([Kwisso911](https://github.com/Kwisso911))
 - Approvers: Christian Tanner ([Kwisso911](https://github.com/Kwisso911))
 
-Release binaries are built by GitHub Actions from this repository ([`.github/workflows/release.yml`](.github/workflows/release.yml)) and every signing request is approved manually.
+Release binaries are built by the maintainer from tagged source code in this repository (`npm run release`) and signed with the Certum certificate including a timestamp. Only the maintainer can sign; the private key is held in the Certum SimplySign cloud.
 
 ## Privacy
 
