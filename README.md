@@ -34,8 +34,8 @@ The PHP endpoint that sends the reset code lives in [`server/`](server/).
 
 Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
 
-- Committers and reviewers: [Visual Fantastix](https://github.com/)
-- Approvers: [Visual Fantastix](https://github.com/)
+- Committers and reviewers: [Kwisso911](https://github.com/Kwisso911)
+- Approvers: [Kwisso911](https://github.com/Kwisso911)
 
 Release binaries are built by GitHub Actions from this repository ([`.github/workflows/release.yml`](.github/workflows/release.yml)) and every signing request is approved manually.
 
