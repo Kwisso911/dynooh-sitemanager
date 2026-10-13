@@ -1,0 +1,20 @@
+.DS_Store
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# Build output and local tooling
+/release
+/src-tauri/target
+/src-tauri/.cargo
+
+# Secrets and personal data
+/scripts/.mail-token
+/server/*.config.php
+*.vfsites
