@@ -4,7 +4,7 @@
   import { open } from "@tauri-apps/plugin-dialog";
   import { openUrl } from "@tauri-apps/plugin-opener";
   import { getVersion } from "@tauri-apps/api/app";
-  import { api, type Progress, type Site, type UpdateInfo } from "$lib/api";
+  import { api, webUrlFor, type Progress, type Site, type UpdateInfo } from "$lib/api";
   import { currentSite, editorState, log, openSettings, promptText, ui, type Tab } from "$lib/state.svelte";
   import { initJobs } from "$lib/jobs.svelte";
   import { loadLangPacks, t, te } from "$lib/i18n.svelte";
@@ -56,7 +56,8 @@
         action: () => api.openFolder(s.id).catch((err) => log(`Explorer: ${te(err)}`, "error")),
       },
     ];
-    if (s.webUrl) items.push({ label: t("Im Browser öffnen"), action: () => openUrl(s.webUrl) });
+    const url = webUrlFor(s);
+    if (url) items.push({ label: t("Im Browser öffnen"), action: () => openUrl(url) });
     siteMenu = { x: e.clientX, y: e.clientY, items };
   }
   let showLog = $state(false);
@@ -215,6 +216,7 @@
   }
 
   const site = $derived(currentSite());
+  const siteUrl = $derived(site ? webUrlFor(site) : null);
   const filtered = $derived(
     ui.sites.filter((s) => {
       const f = filter.toLowerCase();
@@ -385,8 +387,8 @@
         <button onclick={() => openSettings(site.id)}>{t("Einstellungen")}</button>
       {/if}
       <div class="spacer"></div>
-      {#if site?.webUrl}
-        <button class="link" onclick={() => openUrl(site.webUrl)}>{site.webUrl}</button>
+      {#if site && siteUrl}
+        <button class="link" onclick={() => openUrl(siteUrl)}>{siteUrl}</button>
       {/if}
     </nav>
 

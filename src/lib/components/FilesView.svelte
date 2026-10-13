@@ -2,7 +2,7 @@
   import { untrack } from "svelte";
   import { confirm } from "@tauri-apps/plugin-dialog";
   import { openUrl, revealItemInDir } from "@tauri-apps/plugin-opener";
-  import { api, joinRel, type Side, type Site } from "$lib/api";
+  import { api, joinRel, webUrlFor, type Side, type Site } from "$lib/api";
   import { isBinary, log, openFile, promptText } from "$lib/state.svelte";
   import { clamp, drag, loadLayout, saveLayout } from "$lib/drag";
   import { saveSession, session } from "$lib/session";
@@ -53,7 +53,10 @@
 
   let panesEl = $state<HTMLDivElement | null>(null);
   let split = $state(loadLayout("split", 50));
-  const order = $derived<[Side, Side]>(prefs.serverSide === "right" ? ["local", "remote"] : ["remote", "local"]);
+  const order = $derived<Side[]>(
+    prefs.panes === "remote" ? ["remote"] : prefs.panes === "local" ? ["local"] : prefs.serverSide === "right" ? ["local", "remote"] : ["remote", "local"],
+  );
+  const columns = $derived(order.length === 1 ? "minmax(0, 1fr)" : `minmax(0, ${split}fr) 5px minmax(0, ${100 - split}fr)`);
 
   function resizeSplit(e: PointerEvent) {
     if (!panesEl) return;
@@ -210,11 +213,6 @@
     }
   }
 
-  function browserUrl(rel: string): string | null {
-    if (!site.webUrl) return null;
-    return site.webUrl.replace(/\/+$/, "") + "/" + rel.split("/").map(encodeURIComponent).join("/");
-  }
-
   function showMenu(side: Side, x: number, y: number, target: Sel | null) {
     const sel = pane[side].sel;
     const single = target && sel.length <= 1 ? target : null;
@@ -227,7 +225,7 @@
           ? t("hochladen")
           : t("herunterladen")
       : "";
-    const url = browserUrl(target?.rel ?? "");
+    const url = webUrlFor(site, target?.rel ?? "");
 
     const items: MenuItem[] = [];
     if (single && !single.isDir) items.push({ label: t("Öffnen"), hint: "Enter", action: () => open(side, single.rel) });
@@ -359,7 +357,11 @@
 {:else}
   <div class="files-view">
     <div class="toolbar">
-      {#if prefs.serverSide === "right"}
+      {#if prefs.panes === "local"}
+        <button onclick={() => upload()} disabled={pane.local.sel.length === 0} title={t("Auswahl lokal → Server")}>{t("Hochladen")}</button>
+      {:else if prefs.panes === "remote"}
+        <button onclick={() => download()} disabled={pane.remote.sel.length === 0} title={t("Auswahl Server → lokal")}>{t("Herunterladen")}</button>
+      {:else if prefs.serverSide === "right"}
         <button onclick={() => upload()} disabled={pane.local.sel.length === 0} title={t("Auswahl lokal → Server")}>{t("Hochladen")} →</button>
         <button onclick={() => download()} disabled={pane.remote.sel.length === 0} title={t("Auswahl Server → lokal")}>← {t("Herunterladen")}</button>
       {:else}
@@ -377,7 +379,7 @@
       <div class="spacer"></div>
       <span class="muted">{t("Rechtsklick für weitere Aktionen")}</span>
     </div>
-    <div class="panes" bind:this={panesEl} style="grid-template-columns: minmax(0, {split}fr) 5px minmax(0, {100 - split}fr)">
+    <div class="panes" bind:this={panesEl} style="grid-template-columns: {columns}">
       {#each order as side, i (side)}
         {#if i === 1}
           <div class="gutter" role="separator" aria-orientation="vertical" onpointerdown={resizeSplit}></div>

@@ -310,6 +310,8 @@ export const EN: Record<string, string> = {
   "Version {version}": "Version {version}",
   "Ungültige Download-Adresse": "Invalid download address",
   "Updates": "Updates",
+  "Spalten in der Dateiansicht": "Columns in the file view",
+  "Server und lokal": "Server and local",
   "Beim Start nach neuer Version suchen": "Check for a new version on start",
   "Lädt dazu nur die Versionsnummer von apps.dynooh.com, es werden keine Daten gesendet.": "Only downloads the version number from apps.dynooh.com, no data is sent.",
   "Bitte warten …": "Please wait …",

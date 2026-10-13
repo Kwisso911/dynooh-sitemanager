@@ -187,3 +187,31 @@ export const api = {
 export function joinRel(base: string, name: string): string {
   return base ? `${base}/${name}` : name;
 }
+
+/** Folder names hosting providers use as document root; the URL path starts below them. */
+const DOC_ROOTS = new Set(["httpdocs", "httpsdocs", "public_html", "htdocs", "www", "web", "html"]);
+
+const segments = (path: string) => path.split(/[\\/]+/).filter(Boolean);
+
+/**
+ * Browser address of a server path. When the FTP folder lies below the document root
+ * (e.g. /httpdocs/river/), that part is added to the web URL unless it already ends with it.
+ */
+export function webUrlFor(site: Site, rel = ""): string | null {
+  const raw = site.webUrl.trim();
+  if (!raw) return null;
+  let url: URL;
+  try {
+    url = new URL(/^[a-z][a-z\d+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`);
+  } catch {
+    return null;
+  }
+  let base = segments(decodeURIComponent(url.pathname));
+  if (base.length && DOC_ROOTS.has(base[0].toLowerCase())) base = base.slice(1);
+  const remote = segments(site.remotePath);
+  const root = remote.findIndex((s) => DOC_ROOTS.has(s.toLowerCase()));
+  const below = root >= 0 ? remote.slice(root + 1) : [];
+  const covered = below.length <= base.length && below.every((s, i) => base[base.length - below.length + i] === s);
+  const path = [...base, ...(covered ? [] : below), ...segments(rel)];
+  return `${url.origin}/${path.map(encodeURIComponent).join("/")}`;
+}

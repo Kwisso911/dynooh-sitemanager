@@ -162,8 +162,16 @@
           </select>
         </label>
         <label>
+          {t("Spalten in der Dateiansicht")}
+          <select bind:value={prefs.panes}>
+            <option value="both">{t("Server und lokal")}</option>
+            <option value="remote">{t("Nur Server")}</option>
+            <option value="local">{t("Nur lokal")}</option>
+          </select>
+        </label>
+        <label>
           {t("Server-Spalte in der Dateiansicht")}
-          <select bind:value={prefs.serverSide}>
+          <select bind:value={prefs.serverSide} disabled={prefs.panes !== "both"}>
             <option value="left">{t("links")}</option>
             <option value="right">{t("rechts")}</option>
           </select>

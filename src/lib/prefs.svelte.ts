@@ -2,6 +2,7 @@ import { loadLayout, saveLayout } from "./drag";
 
 export type ThemeName = "dark" | "light" | "custom";
 export type Position = "left" | "right";
+export type Panes = "both" | "remote" | "local";
 
 /** Editable colours; the rest of the palette is derived from these. */
 export const COLOR_KEYS = ["bg", "bg2", "bg3", "line", "text", "muted", "accent", "ok", "warn", "err"] as const;
@@ -43,6 +44,8 @@ export interface Prefs {
   custom: Palette;
   sidebar: Position;
   serverSide: Position;
+  /** Columns shown in the file view. */
+  panes: Panes;
   updateCheck: boolean;
 }
 
@@ -54,6 +57,7 @@ export const prefs = $state<Prefs>({
   theme: "dark",
   sidebar: "right",
   serverSide: "left",
+  panes: "both",
   updateCheck: true,
   ...stored,
   lang: stored.langChosen && stored.lang ? stored.lang : defaultLang,
