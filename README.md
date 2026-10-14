@@ -1,5 +1,7 @@
 # Dynooh SiteManager
 
+**Author and maintainer: Christian Tanner** ([Kwisso911](https://github.com/Kwisso911))
+
 The lightning-fast, lightweight FTP server manager for Windows. Manage websites, uploads, synchronisation and logins in one place – a lean replacement for the Dreamweaver site manager.
 
 **Download:** [apps.dynooh.com](https://apps.dynooh.com/) (portable `.exe`, no installation)
