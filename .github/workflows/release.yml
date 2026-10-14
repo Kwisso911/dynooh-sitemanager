@@ -1,19 +1,19 @@
-name: Release
+name: Build check
 
+# Signed releases are built locally with `npm run release` (Certum certificate via SimplySign)
+# and uploaded to the GitHub release by the maintainer. This workflow only verifies that the
+# tagged source builds and keeps the unsigned binary as an artifact for comparison.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: read
+  contents: read
 
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      HAS_SIGNPATH: ${{ secrets.SIGNPATH_API_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,29 +40,9 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           $version = (Get-Content src-tauri/tauri.conf.json | ConvertFrom-Json).version
-          Copy-Item src-tauri/target/release/vf-sitemanager.exe "dist/dynooh-sitemanager-$version-x64.exe"
+          Copy-Item src-tauri/target/release/vf-sitemanager.exe "dist/dynooh-sitemanager-$version-x64-unsigned.exe"
 
-      - name: Upload unsigned artifact
-        id: upload-unsigned
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: unsigned
           path: dist/*.exe
-
-      - name: Sign with SignPath
-        if: env.HAS_SIGNPATH == 'true'
-        uses: signpath/github-action-submit-signing-request@v1
-        with:
-          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
-          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
-          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
-          signing-policy-slug: ${{ vars.SIGNPATH_POLICY_SLUG }}
-          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
-          wait-for-completion: true
-          output-artifact-directory: signed
-
-      - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ env.HAS_SIGNPATH == 'true' && 'signed/*.exe' || 'dist/*.exe' }}

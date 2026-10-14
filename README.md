@@ -34,7 +34,7 @@ The PHP endpoint that sends the reset code lives in [`server/`](server/).
 
 ## Code signing policy
 
-Code signing certificate: [Certum Open Source Code Signing](https://www.certum.eu/) (Asseco Data Systems), issued to Christian Tanner. The certificate is currently being issued; until then releases are unsigned.
+Code signing certificate: [Certum Open Source Code Signing](https://www.certum.eu/) (Asseco Data Systems), issued to Christian Tanner. Releases from version 0.1.5 are signed.
 
 - Committers and reviewers: Christian Tanner ([Kwisso911](https://github.com/Kwisso911))
 - Approvers: Christian Tanner ([Kwisso911](https://github.com/Kwisso911))
