@@ -1,6 +1,6 @@
 [package]
 name = "vf-sitemanager"
-version = "0.1.6"
+version = "0.1.7"
 description = "Dynooh SiteManager – lightning-fast, lightweight FTP site manager"
 authors = ["Visual Fantastix"]
 license = "MIT"
