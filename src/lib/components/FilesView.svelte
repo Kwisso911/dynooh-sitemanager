@@ -298,8 +298,12 @@
 
   let dropTarget = $state<{ side: Side; dir: string } | null>(null);
 
-  function dropTargetAt(pos: { x: number; y: number }): { side: Side; dir: string } | null {
-    const el = document.elementFromPoint(pos.x / devicePixelRatio, pos.y / devicePixelRatio);
+  function dropTargetAt(pos: { x: number; y: number }) {
+    return targetAt(pos.x / devicePixelRatio, pos.y / devicePixelRatio);
+  }
+
+  function targetAt(x: number, y: number): { side: Side; dir: string } | null {
+    const el = document.elementFromPoint(x, y);
     const paneEl = el?.closest<HTMLElement>("[data-side]");
     if (!el || !paneEl || !panesEl?.contains(paneEl)) return null;
     const row = el.closest<HTMLElement>("tr[data-rel]");
@@ -322,6 +326,93 @@
     } catch (e) {
       log(`${t("Ablegen")}: ${te(e)}`, "error");
     }
+  }
+
+  let itemDrag = $state<{ side: Side; items: Sel[]; x: number; y: number } | null>(null);
+
+  /** Same side moves; a folder cannot go into itself and items already in the folder stay. */
+  function moveTarget(from: Side, items: Sel[], target: { side: Side; dir: string } | null) {
+    if (!target || target.side !== from) return target;
+    if (items.some((s) => s.isDir && (target.dir === s.rel || target.dir.startsWith(s.rel + "/")))) return null;
+    if (items.every((s) => parentOf(s.rel) === target.dir)) return null;
+    return target;
+  }
+
+  function startItemDrag(side: Side, e: PointerEvent, items: Sel[]) {
+    const sx = e.clientX;
+    const sy = e.clientY;
+    let active = false;
+    const move = (ev: PointerEvent) => {
+      if (!active && Math.hypot(ev.clientX - sx, ev.clientY - sy) < 6) return;
+      if (!active) {
+        active = true;
+        pane[side].sel = items;
+        document.body.classList.add("item-dragging");
+      }
+      itemDrag = { side, items, x: ev.clientX, y: ev.clientY };
+      dropTarget = moveTarget(side, items, targetAt(ev.clientX, ev.clientY));
+      document.body.classList.toggle("no-drop", !dropTarget);
+    };
+    const finish = (drop: boolean) => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", cancel);
+      window.removeEventListener("keydown", key, true);
+      document.body.classList.remove("item-dragging", "no-drop");
+      const target = dropTarget;
+      itemDrag = null;
+      dropTarget = null;
+      if (!active) return;
+      // The release would otherwise count as a click on the row under the pointer.
+      const swallow = (ev: MouseEvent) => ev.stopPropagation();
+      window.addEventListener("click", swallow, true);
+      setTimeout(() => window.removeEventListener("click", swallow, true));
+      if (drop && target) dropItems(side, items, target);
+    };
+    const up = () => finish(true);
+    const cancel = () => finish(false);
+    const key = (ev: KeyboardEvent) => {
+      if (ev.key !== "Escape" || !active) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      finish(false);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", cancel);
+    window.addEventListener("keydown", key, true);
+  }
+
+  async function dropItems(from: Side, selection: Sel[], target: { side: Side; dir: string }) {
+    const items = selection.filter((s) => !selection.some((o) => o.isDir && o !== s && s.rel.startsWith(o.rel + "/")));
+    if (target.side !== from) {
+      try {
+        await api.copyItems(site.id, from, items, target.side, target.dir);
+        revealItems(target.side, items.map((s) => ({ rel: joinRel(target.dir, baseName(s.rel)), isDir: s.isDir })));
+      } catch (e) {
+        log(`${target.side === "remote" ? t("Hochladen") : t("Herunterladen")}: ${te(e)}`, "error");
+      }
+      return;
+    }
+    await run(t("Verschieben"), async () => {
+      const existing = new Set((from === "local" ? await api.localList(site.id, target.dir) : await api.remoteList(site.id, target.dir)).map((e) => e.name));
+      const moved: Sel[] = [];
+      for (const s of items) {
+        if (parentOf(s.rel) === target.dir) continue;
+        const to = joinRel(target.dir, baseName(s.rel));
+        if (existing.has(baseName(s.rel))) {
+          log(`${t("Verschieben")}: ${t("«{to}» existiert bereits", { to })}`, "error");
+          continue;
+        }
+        if (from === "local") await api.localRename(site.id, s.rel, to);
+        else await api.remoteRename(site.id, s.rel, to);
+        log(t("Verschoben ({side}): {from} → {to}", { side: sideName(from), from: s.rel, to }), "ok");
+        moved.push({ rel: to, isDir: s.isDir });
+      }
+      pane[from].reload++;
+      if (moved.length) revealItems(from, moved);
+      else pane[from].sel = [];
+    });
   }
 
   $effect(() => {
@@ -397,9 +488,24 @@
           onopen={(rel) => (side === "local" ? openLocal(rel) : openRemote(rel))}
           oncontext={(x, y, target) => showMenu(side, x, y, target)}
           onkey={(e) => key(side, e)}
+          ondragitems={(e, items) => startItemDrag(side, e, items)}
         />
       {/each}
     </div>
+  </div>
+{/if}
+
+{#if itemDrag}
+  <div class="site-ghost" style="left: {itemDrag.x + 14}px; top: {itemDrag.y + 10}px">
+    {itemDrag.items.length === 1 ? baseName(itemDrag.items[0].rel) : t("{n} Element(e)", { n: itemDrag.items.length })}
+    <span class="muted">
+      {#if dropTarget}
+        → {dropTarget.side === itemDrag.side ? t("verschieben") : dropTarget.side === "remote" ? t("hochladen") : t("herunterladen")}
+        ({sideName(dropTarget.side)}: /{dropTarget.dir})
+      {:else}
+        · {t("Esc bricht ab")}
+      {/if}
+    </span>
   </div>
 {/if}
 

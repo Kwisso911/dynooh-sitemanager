@@ -330,9 +330,17 @@
       const el = document.elementFromPoint(ev.clientX, ev.clientY)?.closest<HTMLElement>("[data-group]");
       dropGroup = el ? (el.dataset.group ?? "") : null;
     };
+    const key = (ev: KeyboardEvent) => {
+      if (ev.key !== "Escape" || !dragMoved) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      dropGroup = null;
+      up();
+    };
     const up = async () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
+      window.removeEventListener("keydown", key, true);
       document.body.classList.remove("site-dragging");
       const site = dragSite;
       const target = dropGroup;
@@ -351,6 +359,7 @@
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
+    window.addEventListener("keydown", key, true);
   }
 </script>
 

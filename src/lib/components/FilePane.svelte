@@ -27,6 +27,7 @@
     onopen?: (rel: string, entry: Entry) => void;
     oncontext?: (x: number, y: number, target: Sel | null) => void;
     onkey?: (e: KeyboardEvent) => void;
+    ondragitems?: (ev: PointerEvent, items: Sel[]) => void;
   }
 
   let {
@@ -42,6 +43,7 @@
     onopen,
     oncontext,
     onkey,
+    ondragitems,
   }: Props = $props();
 
   type Row =
@@ -208,6 +210,12 @@
       selected = [item];
       anchor = i;
     }
+  }
+
+  /** Drags the whole selection when the row is part of it, otherwise only the row. */
+  function pointerdown(ev: PointerEvent, rel: string, isDir: boolean) {
+    if (ev.button !== 0 || !ondragitems) return;
+    ondragitems(ev, isSelected(rel) ? selected.map((s) => ({ ...s })) : [{ rel, isDir }]);
   }
 
   function activate(rel: string, e: Entry) {
@@ -467,6 +475,7 @@
               class:drop-row={dropDir !== null && dropDir !== "" && r.rel === dropDir}
               class:selected={isSelected(r.rel)}
               class:excluded={site.exclude.includes(r.e.name)}
+              onpointerdown={(ev) => pointerdown(ev, r.rel, r.e.isDir)}
               onclick={(ev) => click(ev, r.rel)}
               ondblclick={() => activate(r.rel, r.e)}
               oncontextmenu={(ev) => context(ev, r.rel)}

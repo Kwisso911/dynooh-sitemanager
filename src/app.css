@@ -87,6 +87,8 @@ body.dragging * { cursor: col-resize !important; }
 .site-list li.drop-into button { background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .site-list .new-group button { border: 1px dashed var(--line) !important; justify-content: center; }
 body.site-dragging, body.site-dragging * { cursor: grabbing !important; user-select: none; }
+body.item-dragging, body.item-dragging * { cursor: grabbing !important; user-select: none; }
+body.item-dragging.no-drop, body.item-dragging.no-drop * { cursor: no-drop !important; }
 .site-ghost { position: fixed; z-index: 80; pointer-events: none; padding: 4px 10px; background: var(--bg3); border: 1px solid var(--accent); border-radius: 4px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); font-size: 12px; white-space: nowrap; }
 .warn-dot { color: var(--warn); font-size: 9px; margin-left: 4px; }
 .sidebar-actions { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-top: 1px solid var(--line); }
