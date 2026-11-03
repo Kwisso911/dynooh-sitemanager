@@ -6,6 +6,12 @@ The lightning-fast, lightweight FTP server manager for Windows. Manage websites,
 
 **Download:** [apps.dynooh.com/sitemanager](https://apps.dynooh.com/sitemanager/) or [GitHub Releases](https://github.com/Kwisso911/dynooh-sitemanager/releases/latest) (portable `.exe`, signed, no installation)
 
+![Server and local files side by side, sites in groups](docs/screenshot-files.png)
+
+![Comparing local and server files before synchronising](docs/screenshot-sync.png)
+
+![HTML file in the built-in editor](docs/screenshot-editor.png)
+
 ## Features
 
 - **Sites and groups** – organise all websites in groups, import existing Dreamweaver sites or whole folders
