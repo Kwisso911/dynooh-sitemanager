@@ -6,6 +6,8 @@ The lightning-fast, lightweight FTP server manager for Windows. Manage websites,
 
 **Download:** [apps.dynooh.com/sitemanager](https://apps.dynooh.com/sitemanager/) or [GitHub Releases](https://github.com/Kwisso911/dynooh-sitemanager/releases/latest) (portable `.exe`, signed, no installation)
 
+**Scoop:** `scoop bucket add dynooh https://github.com/Kwisso911/scoop-dynooh` and then `scoop install dynooh/dynooh-sitemanager`
+
 ![Server and local files side by side, sites in groups](docs/screenshot-files.png)
 
 ![Comparing local and server files before synchronising](docs/screenshot-sync.png)
